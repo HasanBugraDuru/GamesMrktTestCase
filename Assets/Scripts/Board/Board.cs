@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Board : MonoBehaviour
@@ -12,6 +13,8 @@ public class Board : MonoBehaviour
     public GameObject tileLightPrefab;
     public GameObject tileDarkPrefab;
 
+    public MatchManager matchManager;
+
     [Header("Fruit Prefabs")]
     public Fruit[] fruitPrefabs;
 
@@ -19,8 +22,14 @@ public class Board : MonoBehaviour
     private Vector2[,] fruitPositions;
     public float MoveSpeed;
 
+    public enum BoardState 
+    {
+        waiting,
+        canMove 
+    };
+    public BoardState validState = BoardState.canMove;
      
-    public MatchManager matchManager;
+
     private void Awake()
     {
         matchManager = Object.FindObjectOfType<MatchManager>();
@@ -33,10 +42,8 @@ public class Board : MonoBehaviour
         GenerateGrid();
     }
 
-    private void Update()
-    {
-        matchManager.FindMatches();
-    }
+
+    #region Create Region
     public void GenerateGrid()
     {
         for (int x = 0; x < width; x++)
@@ -65,6 +72,7 @@ public class Board : MonoBehaviour
 
        CenterGrid();
        CorretFruitPosition();
+       validState = BoardState.canMove;    
     }
 
     private void CenterGrid()
@@ -96,12 +104,14 @@ public class Board : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region Control Region
     private bool IsThereAnyMatch(Vector2Int controlPos, Fruit ctrlFruit)
     {
-        if (controlPos.x > 1 )
+        if (controlPos.x > 1)
         {
-            if (allFruits[controlPos.x-1,controlPos.y].type == ctrlFruit.type && 
+            if (allFruits[controlPos.x - 1, controlPos.y].type == ctrlFruit.type &&
                 allFruits[controlPos.x - 2, controlPos.y].type == ctrlFruit.type)
             {
                 return true;
@@ -109,15 +119,38 @@ public class Board : MonoBehaviour
         }
         if (controlPos.y > 1)
         {
-            if (allFruits[controlPos.x , controlPos.y - 1].type == ctrlFruit.type &&
-                allFruits[controlPos.x , controlPos.y - 2].type == ctrlFruit.type)
+            if (allFruits[controlPos.x, controlPos.y - 1].type == ctrlFruit.type &&
+                allFruits[controlPos.x, controlPos.y - 2].type == ctrlFruit.type)
             {
                 return true;
             }
         }
         return false;
     }
+    private void ControlMisplacement()
+    {
+        List<Fruit> FoundedFruitsList = new List<Fruit>();
 
+        FoundedFruitsList.AddRange(FindObjectsOfType<Fruit>());
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (FoundedFruitsList.Contains(allFruits[x, y]))
+                {
+                    FoundedFruitsList.Remove(allFruits[x, y]);
+                }
+            }
+        }
+
+        foreach (Fruit fruit in FoundedFruitsList)
+        {
+            Destroy(fruit.gameObject);
+        }
+    }
+    #endregion
+
+    #region Delete Region
     private void DeleteMatchedFruit(Vector2Int pos)
     {
         if (allFruits[pos.x,pos.y] != null) 
@@ -140,7 +173,9 @@ public class Board : MonoBehaviour
         }
         StartCoroutine(MoveDownFruitsRouitine());
     }
+    #endregion
 
+    #region Move Region
     IEnumerator MoveDownFruitsRouitine()
     {
         yield return new WaitForSeconds(0.2f);
@@ -168,15 +203,21 @@ public class Board : MonoBehaviour
     }
     IEnumerator FillBoardRoutine()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.25f);
         FillUpperGaps();
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.25f);
 
         matchManager.FindMatches();
         if(matchManager.MatchedFruitsList.Count > 0)
         {
-
+            yield return new WaitForSeconds(0.75f);
+            DeleteAllMatcheds();
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.2f);
+            validState = BoardState.canMove;
         }
     } 
     
@@ -194,6 +235,7 @@ public class Board : MonoBehaviour
                 }
             }
         }
-
+        ControlMisplacement();
     }
+    #endregion
 }
