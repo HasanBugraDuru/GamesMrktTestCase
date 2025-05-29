@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Board : MonoBehaviour
 {
@@ -8,6 +9,13 @@ public class Board : MonoBehaviour
     public int width = 8;
     public int height = 8;
     public float tileSize = 1.0f;
+
+    [Header("Game Settings")]
+    [SerializeField] private GameSettings gameSettings;
+
+    [Header("SFX")]
+    [SerializeField] public AudioClip audioBreak;
+    [SerializeField] public float audioBreakVolume;
 
     [Header("Tile Prefabs")]
     public GameObject tileLightPrefab;
@@ -32,6 +40,8 @@ public class Board : MonoBehaviour
 
     private void Awake()
     {
+        width = gameSettings.levels[gameSettings.currentLevelIndex].width;
+        height = gameSettings.levels[gameSettings.currentLevelIndex].height;
         matchManager = Object.FindObjectOfType<MatchManager>();
     }
     void Start()
@@ -157,6 +167,8 @@ public class Board : MonoBehaviour
         {
             if (allFruits[pos.x, pos.y].isMatch)
             {
+                SoundFXManager.instance.PlaySoundFXClip(audioBreak, transform, Random.Range(audioBreakVolume - 0.05f , audioBreakVolume + 0.05f));
+                ParticleEffectsManager.instance.PlayBreakingEffect(allFruits[pos.x, pos.y].transform.position, allFruits[pos.x, pos.y].particleColor);
                 Destroy(allFruits[pos.x, pos.y].gameObject);
                 allFruits[pos.x, pos.y] = null;
             }

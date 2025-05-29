@@ -50,6 +50,10 @@ MonoBehaviour:
   board: {fileID: 0}
   firstClickPoint: {x: 0, y: 0}
   lastClickPoint: {x: 0, y: 0}
+  fruitPosition: {x: 0, y: 0}
+  isMatch: 0
+  particleColor: {r: 0.9960785, g: 0.04705883, b: 0.03137255, a: 0.8352941}
+  type: 0
 --- !u!212 &1177923682777966154
 SpriteRenderer:
   m_ObjectHideFlags: 0

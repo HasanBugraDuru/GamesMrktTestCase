@@ -12,6 +12,7 @@ public class Fruit : MonoBehaviour
    [HideInInspector] public Vector2 lastClickPoint;
    [HideInInspector] public Vector2 fruitPosition;
    [HideInInspector]  public bool isMatch;
+   public Color particleColor;
 
    private bool isMousePressed;
    private float dragAngle;

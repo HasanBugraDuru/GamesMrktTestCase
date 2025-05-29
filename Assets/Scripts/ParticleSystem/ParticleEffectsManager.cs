@@ -16,7 +16,7 @@ public class ParticleEffectsManager : MonoBehaviour
     }
 
 
-    public void PlayDeathEffect(Vector3 position, Color fruitColor)
+    public void PlayBreakingEffect(Vector3 position, Color fruitColor)
     {
         if (breakingParticles != null)
         {

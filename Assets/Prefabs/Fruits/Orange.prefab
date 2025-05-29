@@ -51,6 +51,8 @@ MonoBehaviour:
   firstClickPoint: {x: 0, y: 0}
   lastClickPoint: {x: 0, y: 0}
   fruitPosition: {x: 0, y: 0}
+  isMatch: 0
+  particleColor: {r: 0.9803922, g: 0.2509804, b: 0.015686275, a: 0.78431374}
   type: 2
 --- !u!212 &4303513120506960935
 SpriteRenderer:
