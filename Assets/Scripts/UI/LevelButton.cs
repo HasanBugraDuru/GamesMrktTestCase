@@ -10,8 +10,16 @@ public class LevelButton : MonoBehaviour
 
     public void PlayLevel()
     {
-        gameSettings.currentLevelIndex = levelIndex;
+        gameSettings.selectedLevelIndex = levelIndex;
         SceneManager.LoadScene("Game");
     }
+    public void PlayNextLevel()
+    {
+        gameSettings.selectedLevelIndex++;
+    }
 
+    public void ResetLevel()
+    {
+        SceneManager.LoadScene("Game");
+    }
 }

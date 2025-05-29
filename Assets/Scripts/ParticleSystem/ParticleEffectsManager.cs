@@ -20,7 +20,7 @@ public class ParticleEffectsManager : MonoBehaviour
     {
         if (breakingParticles != null)
         {
-            // Ölüm patlamasý partikülleri
+           
             ParticleSystem breakingInstance = Instantiate(breakingParticles, position, Quaternion.identity);
 
             var main = breakingInstance.main;

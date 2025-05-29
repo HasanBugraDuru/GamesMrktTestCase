@@ -5,6 +5,13 @@ using static Unity.Collections.AllocatorManager;
 
 public class Fruit : MonoBehaviour
 {
+   [Header("SFX")]
+   [SerializeField] public AudioClip audioSlide;
+   [SerializeField] public float audioSlideVolume;
+
+   [Header("SFX")]
+   public Color particleColor;
+
    [HideInInspector] public Vector2Int posIndex;
    [HideInInspector] public Board board;
 
@@ -12,14 +19,11 @@ public class Fruit : MonoBehaviour
    [HideInInspector] public Vector2 lastClickPoint;
    [HideInInspector] public Vector2 fruitPosition;
    [HideInInspector]  public bool isMatch;
-   public Color particleColor;
-
+ 
    private bool isMousePressed;
    private float dragAngle;
    private Vector2Int FirstIndex;
    private Vector2 FirstPos;
-
-
    private Fruit touchedFruit;
 
     public enum FruitType
@@ -128,6 +132,7 @@ public class Fruit : MonoBehaviour
 
         board.allFruits[posIndex.x, posIndex.y] = this;
         board.allFruits[touchedFruit.posIndex.x, touchedFruit.posIndex.y] = touchedFruit;
+        SoundFXManager.instance.PlaySoundFXClip(audioSlide, transform, audioSlideVolume);
         StartCoroutine(ControlMoveRouitne());
     }
 

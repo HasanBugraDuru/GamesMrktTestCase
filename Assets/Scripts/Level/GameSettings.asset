@@ -12,8 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 546c19d80542c814e8d4188783e403f7, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
-  levels: []
-  currentLevelIndex: 0
-  selectedLevelIndex: 0
+  levels:
+  - width: 5
+    height: 5
+    moveLimit: 0
+    timeLimit: 0
+    goals:
+    - fruitGoal: {fileID: 0}
+      requiredAmount: 0
+  - width: 4
+    height: 6
+    moveLimit: 0
+    timeLimit: 0
+    goals: []
+  - width: 6
+    height: 8
+    moveLimit: 0
+    timeLimit: 0
+    goals: []
+  currentLevelIndex: 1
+  selectedLevelIndex: 1
   musicVolume: 1
   sfxVolume: 1

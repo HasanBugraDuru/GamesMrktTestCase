@@ -40,8 +40,8 @@ public class Board : MonoBehaviour
 
     private void Awake()
     {
-        width = gameSettings.levels[gameSettings.currentLevelIndex].width;
-        height = gameSettings.levels[gameSettings.currentLevelIndex].height;
+        width = gameSettings.levels[gameSettings.selectedLevelIndex].width;
+        height = gameSettings.levels[gameSettings.selectedLevelIndex].height;
         matchManager = Object.FindObjectOfType<MatchManager>();
     }
     void Start()
@@ -167,7 +167,7 @@ public class Board : MonoBehaviour
         {
             if (allFruits[pos.x, pos.y].isMatch)
             {
-                SoundFXManager.instance.PlaySoundFXClip(audioBreak, transform, Random.Range(audioBreakVolume - 0.05f , audioBreakVolume + 0.05f));
+                SoundFXManager.instance.PlaySoundFXClip(audioBreak, transform, audioBreakVolume);
                 ParticleEffectsManager.instance.PlayBreakingEffect(allFruits[pos.x, pos.y].transform.position, allFruits[pos.x, pos.y].particleColor);
                 Destroy(allFruits[pos.x, pos.y].gameObject);
                 allFruits[pos.x, pos.y] = null;

@@ -46,13 +46,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf34daeac19f1bf4590a02380ca0dd1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSlide: {fileID: 8300000, guid: e9ed72c79d87aa04f8675623ad4f08a3, type: 3}
+  audioSlideVolume: 0.1
+  particleColor: {r: 0.18431373, g: 0.16862746, b: 0.70980394, a: 0.78431374}
   posIndex: {x: 0, y: 0}
   board: {fileID: 0}
   firstClickPoint: {x: 0, y: 0}
   lastClickPoint: {x: 0, y: 0}
   fruitPosition: {x: 0, y: 0}
   isMatch: 0
-  particleColor: {r: 0.18431373, g: 0.16862746, b: 0.70980394, a: 0.78431374}
   type: 3
 --- !u!212 &5258978231333172935
 SpriteRenderer:

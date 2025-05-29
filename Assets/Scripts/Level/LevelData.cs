@@ -10,6 +10,8 @@ public class LevelData
     public int height;
     public int moveLimit;
     public float timeLimit;
+
+    [System.Serializable]
     public struct FruitGoal
     {
         public Fruit fruitGoal;
