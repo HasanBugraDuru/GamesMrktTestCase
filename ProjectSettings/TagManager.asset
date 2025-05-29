@@ -56,3 +56,6 @@ TagManager:
   - name: Fruit
     uniqueID: 1046723857
     locked: 0
+  - name: Particles
+    uniqueID: 3306665
+    locked: 0

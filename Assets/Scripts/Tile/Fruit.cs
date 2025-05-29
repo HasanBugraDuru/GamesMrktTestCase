@@ -5,6 +5,13 @@ using static Unity.Collections.AllocatorManager;
 
 public class Fruit : MonoBehaviour
 {
+   [Header("SFX")]
+   [SerializeField] public AudioClip audioSlide;
+   [SerializeField] public float audioSlideVolume;
+
+   [Header("SFX")]
+   public Color particleColor;
+
    [HideInInspector] public Vector2Int posIndex;
    [HideInInspector] public Board board;
 
@@ -12,13 +19,11 @@ public class Fruit : MonoBehaviour
    [HideInInspector] public Vector2 lastClickPoint;
    [HideInInspector] public Vector2 fruitPosition;
    [HideInInspector]  public bool isMatch;
-
+ 
    private bool isMousePressed;
    private float dragAngle;
    private Vector2Int FirstIndex;
    private Vector2 FirstPos;
-
-
    private Fruit touchedFruit;
 
     public enum FruitType
@@ -45,8 +50,11 @@ public class Fruit : MonoBehaviour
         if(isMousePressed && Input.GetMouseButtonUp(0))
         {
             isMousePressed = false;
-            lastClickPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            CalculateAngle();
+            if (board.validState == Board.BoardState.canMove)
+            {
+                lastClickPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                CalculateAngle();
+            } 
         }
     }
     public void ArrangeTheFruit(Vector2Int pos , Board _board)
@@ -57,8 +65,11 @@ public class Fruit : MonoBehaviour
 
     private void OnMouseDown()
     {
-       firstClickPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-       isMousePressed = true;
+        if(board.validState == Board.BoardState.canMove)
+        {
+            firstClickPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            isMousePressed = true;
+        }
     }
 
     //Calculating The Angle Between Two Fruits
@@ -121,13 +132,16 @@ public class Fruit : MonoBehaviour
 
         board.allFruits[posIndex.x, posIndex.y] = this;
         board.allFruits[touchedFruit.posIndex.x, touchedFruit.posIndex.y] = touchedFruit;
+        SoundFXManager.instance.PlaySoundFXClip(audioSlide, transform, audioSlideVolume);
         StartCoroutine(ControlMoveRouitne());
     }
 
     // If There is No Match After Moving Fruits
     public IEnumerator ControlMoveRouitne()
     {
-        yield return new WaitForSeconds(0.5f);
+        board.validState = Board.BoardState.waiting;
+
+        yield return new WaitForSeconds(0.3f);
         board.matchManager.FindMatches();
 
         if(touchedFruit != null)
@@ -142,6 +156,10 @@ public class Fruit : MonoBehaviour
 
                 board.allFruits[posIndex.x, posIndex.y] = this;
                 board.allFruits[touchedFruit.posIndex.x, touchedFruit.posIndex.y] = touchedFruit;
+
+                yield return new WaitForSeconds(0.2f);
+
+                board.validState = Board.BoardState.canMove;
             }
             else
             {
