@@ -15,7 +15,11 @@ public class LevelButton : MonoBehaviour
     }
     public void PlayNextLevel()
     {
-        gameSettings.selectedLevelIndex++;
+        if (gameSettings.selectedLevelIndex != 2)
+        {
+            gameSettings.selectedLevelIndex++;
+        }
+        SceneManager.LoadScene("Game");
     }
 
     public void ResetLevel()

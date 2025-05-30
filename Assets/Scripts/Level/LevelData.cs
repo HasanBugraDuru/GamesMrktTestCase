@@ -18,5 +18,5 @@ public class LevelData
         public int requiredAmount;
     }
 
-    public List<FruitGoal> goals = new List<FruitGoal>();
+    public FruitGoal[] goals;
 }

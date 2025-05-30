@@ -22,6 +22,7 @@ public class Board : MonoBehaviour
     public GameObject tileDarkPrefab;
 
     public MatchManager matchManager;
+    private GoalManager goalManager;
 
     [Header("Fruit Prefabs")]
     public Fruit[] fruitPrefabs;
@@ -40,6 +41,7 @@ public class Board : MonoBehaviour
 
     private void Awake()
     {
+        goalManager = Object.FindObjectOfType<GoalManager>();
         width = gameSettings.levels[gameSettings.selectedLevelIndex].width;
         height = gameSettings.levels[gameSettings.selectedLevelIndex].height;
         matchManager = Object.FindObjectOfType<MatchManager>();
@@ -169,6 +171,7 @@ public class Board : MonoBehaviour
             {
                 SoundFXManager.instance.PlaySoundFXClip(audioBreak, transform, audioBreakVolume);
                 ParticleEffectsManager.instance.PlayBreakingEffect(allFruits[pos.x, pos.y].transform.position, allFruits[pos.x, pos.y].particleColor);
+                goalManager.ControlFruit(allFruits[pos.x, pos.y]);
                 Destroy(allFruits[pos.x, pos.y].gameObject);
                 allFruits[pos.x, pos.y] = null;
             }
@@ -248,6 +251,46 @@ public class Board : MonoBehaviour
             }
         }
         ControlMisplacement();
+    }
+    public void MixBoard()
+    {
+        if(validState != BoardState.waiting)
+        {
+            validState = BoardState.waiting; 
+
+            List<Fruit> fruitsInScene = new List<Fruit>();
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                { 
+                    fruitsInScene.Add(allFruits[x, y]);
+                    allFruits[x, y] = null;
+                }
+            }
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+
+                    int randomFruit = Random.Range(0, fruitsInScene.Count);
+
+                    int controlFlag = 0;
+                    while (IsThereAnyMatch(new Vector2Int(x, y), fruitsInScene[randomFruit]) && controlFlag < 100 && fruitsInScene.Count>1)
+                    {
+                        randomFruit = Random.Range(0, fruitsInScene.Count);
+                        controlFlag++;
+                    }
+
+                    fruitsInScene[randomFruit].ArrangeTheFruit(new Vector2Int(x, y), this);
+                    allFruits[x, y] = fruitsInScene[randomFruit];
+                    allFruits[x, y].fruitPosition = fruitPositions[x,y];
+                    fruitsInScene.RemoveAt(randomFruit);
+                }
+            }
+            StartCoroutine(MoveDownFruitsRouitine());
+        }
     }
     #endregion
 }

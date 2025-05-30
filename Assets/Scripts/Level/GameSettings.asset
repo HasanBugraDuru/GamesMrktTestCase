@@ -18,19 +18,31 @@ MonoBehaviour:
     moveLimit: 0
     timeLimit: 0
     goals:
-    - fruitGoal: {fileID: 0}
-      requiredAmount: 0
+    - fruitGoal: {fileID: 1540920245760326726, guid: c1a7ea6c1d9816f43aaa0b6dba9289a7, type: 3}
+      requiredAmount: 5
+    - fruitGoal: {fileID: 6174923177798458958, guid: 30a5a41fa18d4714cb2efd152a7fe528, type: 3}
+      requiredAmount: 5
   - width: 4
     height: 6
     moveLimit: 0
     timeLimit: 0
-    goals: []
+    goals:
+    - fruitGoal: {fileID: 1540920245760326726, guid: c1a7ea6c1d9816f43aaa0b6dba9289a7, type: 3}
+      requiredAmount: 3
+    - fruitGoal: {fileID: 6174923177798458958, guid: 30a5a41fa18d4714cb2efd152a7fe528, type: 3}
+      requiredAmount: 5
+    - fruitGoal: {fileID: 2098011598222020516, guid: 1a9b7671ea511c643803ea6fa226596c, type: 3}
+      requiredAmount: 2
   - width: 6
     height: 8
     moveLimit: 0
     timeLimit: 0
-    goals: []
-  currentLevelIndex: 1
-  selectedLevelIndex: 1
+    goals:
+    - fruitGoal: {fileID: 1540920245760326726, guid: c1a7ea6c1d9816f43aaa0b6dba9289a7, type: 3}
+      requiredAmount: 12
+    - fruitGoal: {fileID: 2098011598222020516, guid: 1a9b7671ea511c643803ea6fa226596c, type: 3}
+      requiredAmount: 5
+  currentLevelIndex: 0
+  selectedLevelIndex: 0
   musicVolume: 1
   sfxVolume: 1
