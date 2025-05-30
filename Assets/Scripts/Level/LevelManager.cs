@@ -13,16 +13,16 @@ public class LevelManager : MonoBehaviour
 
     private void Awake()
     {
-        if(gameSettings.currentLevelIndex == 1)
+        if(gameSettings.currentLevelIndex == 0)
         {
             level1.interactable = true;
         }
-        else if (gameSettings.currentLevelIndex == 2)
+        else if (gameSettings.currentLevelIndex == 1)
         {
             level1.interactable = true;
             level2.interactable = true;
         }
-        else if (gameSettings.currentLevelIndex == 3)
+        else if (gameSettings.currentLevelIndex == 2)
         {
             level1.interactable = true;
             level2.interactable = true;

@@ -7,8 +7,8 @@ public class GameSettings : ScriptableObject
 {
     [Header("Levels")]
     public LevelData[] levels;
-    public int currentLevelIndex = 1;
-    public int selectedLevelIndex = 1;
+    public int currentLevelIndex = 0;
+    public int selectedLevelIndex = 0;
 
     [Header("Audio")]
     [Range(0f, 1f)]
