@@ -139,27 +139,6 @@ public class Board : MonoBehaviour
         }
         return false;
     }
-    private void ControlMisplacement()
-    {
-        List<Fruit> FoundedFruitsList = new List<Fruit>();
-
-        FoundedFruitsList.AddRange(FindObjectsOfType<Fruit>());
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (FoundedFruitsList.Contains(allFruits[x, y]))
-                {
-                    FoundedFruitsList.Remove(allFruits[x, y]);
-                }
-            }
-        }
-
-        foreach (Fruit fruit in FoundedFruitsList)
-        {
-            Destroy(fruit.gameObject);
-        }
-    }
     #endregion
 
     #region Delete Region

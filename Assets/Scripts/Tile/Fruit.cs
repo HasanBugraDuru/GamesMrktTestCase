@@ -167,4 +167,8 @@ public class Fruit : MonoBehaviour
             }
         }
     }
+    private SlideFruit()
+    {
+
+    }
 }
