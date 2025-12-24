@@ -1,30 +1,26 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static Unity.Collections.AllocatorManager;
 
 public class Fruit : MonoBehaviour
 {
-   [Header("SFX")]
-   [SerializeField] public AudioClip audioSlide;
-   [SerializeField] public float audioSlideVolume;
+    [Header("SFX")]
+    [SerializeField] public AudioClip audioSlide;
+    [SerializeField] public float audioSlideVolume;
 
-   [Header("SFX")]
-   public Color particleColor;
+    [Header("Particle")]
+    public Color particleColor;
 
-   [HideInInspector] public Vector2Int posIndex;
-   [HideInInspector] public Board board;
+    [HideInInspector] public Vector2Int posIndex;
+    [HideInInspector] public Board board;
 
-   [HideInInspector] public Vector2 firstClickPoint;
-   [HideInInspector] public Vector2 lastClickPoint;
-   [HideInInspector] public Vector2 fruitPosition;
-   [HideInInspector]  public bool isMatch;
- 
-   private bool isMousePressed;
-   private float dragAngle;
-   private Vector2Int FirstIndex;
-   private Vector2 FirstPos;
-   private Fruit touchedFruit;
+    [HideInInspector] public Vector2 firstClickPoint;
+    [HideInInspector] public Vector2 lastClickPoint;
+    [HideInInspector] public Vector2 fruitPosition;
+    [HideInInspector] public bool isMatch;
+
+    private bool isMousePressed;
+    private Vector2Int lastTargetIndex;
+    private bool hasSlid = false;
 
     public enum FruitType
     {
@@ -38,26 +34,27 @@ public class Fruit : MonoBehaviour
 
     private void Update()
     {
-        if (Vector2.Distance(transform.position,fruitPosition) > 0.01f)
+        if (Vector2.Distance(transform.position, fruitPosition) > 0.01f)
         {
             transform.position = Vector2.Lerp(transform.position, fruitPosition, board.MoveSpeed * Time.deltaTime);
         }
         else
         {
-            transform.position= new Vector3 (fruitPosition.x, fruitPosition.y, 0);
+            transform.position = new Vector3(fruitPosition.x, fruitPosition.y, 0);
         }
 
-        if(isMousePressed && Input.GetMouseButtonUp(0))
+        if (isMousePressed && Input.GetMouseButtonUp(0))
         {
             isMousePressed = false;
-            if (board.validState == Board.BoardState.canMove)
+
+            if (hasSlid)
             {
-                lastClickPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                CalculateAngle();
-            } 
+                StartCoroutine(ControlMoveRoutine());
+            }
         }
     }
-    public void ArrangeTheFruit(Vector2Int pos , Board _board)
+
+    public void ArrangeTheFruit(Vector2Int pos, Board _board)
     {
         posIndex = pos;
         board = _board;
@@ -65,110 +62,106 @@ public class Fruit : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if(board.validState == Board.BoardState.canMove)
+        if (board.validState == Board.BoardState.canMove)
         {
             firstClickPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             isMousePressed = true;
+            lastTargetIndex = posIndex;
+            hasSlid = false;
         }
     }
 
-    //Calculating The Angle Between Two Fruits
-    private void CalculateAngle() 
+    private void OnMouseDrag()
     {
-        float dx = lastClickPoint.x - firstClickPoint.x;
-        float dy = lastClickPoint.y - firstClickPoint.y;
+        if (!isMousePressed || board.validState != Board.BoardState.canMove) return;
 
-        dragAngle = Mathf.Atan2(dy, dx);
-        dragAngle = dragAngle * 180 / Mathf.PI;
+        Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        int targetX = Mathf.Clamp(Mathf.RoundToInt(worldPos.x / board.tileSize), 0, board.width - 1);
+        int targetY = Mathf.Clamp(Mathf.RoundToInt(worldPos.y / board.tileSize), 0, board.height - 1);
 
-        if(Vector3.Distance(firstClickPoint,lastClickPoint)> 0.5f)
+        Vector2Int targetIndex = new Vector2Int(targetX, targetY);
+
+        if (targetIndex == lastTargetIndex) return;
+
+        if (targetIndex.x == posIndex.x || targetIndex.y == posIndex.y)
         {
-            MoveFruit();
+            SlideTo(targetIndex);
+            lastTargetIndex = targetIndex;
+            hasSlid = true;
         }
     }
 
-    //Moving Fruit 
-    private void MoveFruit()
-    {
-        FirstIndex = posIndex;
-        FirstPos = fruitPosition;
-        Vector2 tempPosition;
-        if ( dragAngle < 45 &&  dragAngle > -45 && posIndex.x < board.width -1) 
-        {
-            touchedFruit = board.allFruits[posIndex.x + 1,posIndex.y];
-            touchedFruit.posIndex.x--;
-            posIndex.x++;
-            tempPosition = touchedFruit.fruitPosition;
-            touchedFruit.fruitPosition = fruitPosition;
-            fruitPosition = tempPosition;
-        }
-        else if (dragAngle > 45 && dragAngle <= 135 && posIndex.y < board.height - 1)
-        {
-            touchedFruit = board.allFruits[posIndex.x, posIndex.y + 1];
-            touchedFruit.posIndex.y--;
-            posIndex.y++;
-            tempPosition = touchedFruit.fruitPosition;
-            touchedFruit.fruitPosition = fruitPosition;
-            fruitPosition = tempPosition;
-        }
-        else if (dragAngle < -45 && dragAngle >= -135 && posIndex.y > 0)
-        {
-            touchedFruit = board.allFruits[posIndex.x , posIndex.y - 1];
-            touchedFruit.posIndex.y++;
-            posIndex.y--;
-            tempPosition = touchedFruit.fruitPosition;
-            touchedFruit.fruitPosition = fruitPosition;
-            fruitPosition = tempPosition;
-        }
-        else if (dragAngle > 135 || dragAngle > -135 && posIndex.x >0)
-        {
-            touchedFruit = board.allFruits[posIndex.x -1, posIndex.y];
-            touchedFruit.posIndex.x++;
-            posIndex.x--;
-            tempPosition = touchedFruit.fruitPosition;
-            touchedFruit.fruitPosition = fruitPosition;
-            fruitPosition = tempPosition;
-        }
-
-        board.allFruits[posIndex.x, posIndex.y] = this;
-        board.allFruits[touchedFruit.posIndex.x, touchedFruit.posIndex.y] = touchedFruit;
-        SoundFXManager.instance.PlaySoundFXClip(audioSlide, transform, audioSlideVolume);
-        StartCoroutine(ControlMoveRouitne());
-    }
-
-    // If There is No Match After Moving Fruits
-    public IEnumerator ControlMoveRouitne()
+    private void SlideTo(Vector2Int targetIndex)
     {
         board.validState = Board.BoardState.waiting;
 
+        if (targetIndex.y == posIndex.y)
+        {
+            int delta = targetIndex.x - posIndex.x;
+            ShiftRow(delta);
+        }
+        else if (targetIndex.x == posIndex.x)
+        {
+            int delta = targetIndex.y - posIndex.y;
+            ShiftColumn(delta);
+        }
+
+        SoundFXManager.instance.PlaySoundFXClip(audioSlide, transform, audioSlideVolume);
+    }
+
+    private void ShiftRow(int delta)
+    {
+        int y = posIndex.y;
+        Fruit[] row = new Fruit[board.width];
+        for (int x = 0; x < board.width; x++)
+            row[x] = board.allFruits[x, y];
+
+        Fruit[] newRow = new Fruit[board.width];
+        for (int x = 0; x < board.width; x++)
+        {
+            int newX = (x + delta + board.width) % board.width;
+            newRow[newX] = row[x];
+            newRow[newX].posIndex.x = newX;
+            newRow[newX].fruitPosition = board.fruitPositions[newX, y];
+        }
+
+        for (int x = 0; x < board.width; x++)
+            board.allFruits[x, y] = newRow[x];
+    }
+
+    private void ShiftColumn(int delta)
+    {
+        int x = posIndex.x;
+        Fruit[] column = new Fruit[board.height];
+        for (int y = 0; y < board.height; y++)
+            column[y] = board.allFruits[x, y];
+
+        Fruit[] newColumn = new Fruit[board.height];
+        for (int y = 0; y < board.height; y++)
+        {
+            int newY = (y + delta + board.height) % board.height;
+            newColumn[newY] = column[y];
+            newColumn[newY].posIndex.y = newY;
+            newColumn[newY].fruitPosition = board.fruitPositions[x, newY];
+        }
+
+        for (int y = 0; y < board.height; y++)
+            board.allFruits[x, y] = newColumn[y];
+    }
+
+    public IEnumerator ControlMoveRoutine()
+    {
         yield return new WaitForSeconds(0.3f);
+
         board.matchManager.FindMatches();
 
-        if(touchedFruit != null)
+        if (!isMatch)
         {
-            if (!isMatch && !touchedFruit.isMatch)
-            {
-                touchedFruit.posIndex = posIndex;
-                posIndex = FirstIndex;
-                touchedFruit.fruitPosition = fruitPosition;
-                fruitPosition = FirstPos;
-
-
-                board.allFruits[posIndex.x, posIndex.y] = this;
-                board.allFruits[touchedFruit.posIndex.x, touchedFruit.posIndex.y] = touchedFruit;
-
-                yield return new WaitForSeconds(0.2f);
-
-                board.validState = Board.BoardState.canMove;
-            }
-            else
-            {
-                board.DeleteAllMatcheds();
-            }
+            board.validState = Board.BoardState.canMove;
         }
-    }
-    private SlideFruit()
-    {
-
+        else
+        {
+            board.DeleteAllMatcheds();
+        }
     }
 }

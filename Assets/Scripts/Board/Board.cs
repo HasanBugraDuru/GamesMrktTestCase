@@ -28,7 +28,7 @@ public class Board : MonoBehaviour
     public Fruit[] fruitPrefabs;
 
    [HideInInspector] public Fruit[,] allFruits;
-    private Vector2[,] fruitPositions;
+    public Vector2[,] fruitPositions;
     public float MoveSpeed;
 
     public enum BoardState 
@@ -229,7 +229,6 @@ public class Board : MonoBehaviour
                 }
             }
         }
-        ControlMisplacement();
     }
     public void MixBoard()
     {
